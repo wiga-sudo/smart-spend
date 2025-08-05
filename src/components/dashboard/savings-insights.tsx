@@ -74,7 +74,7 @@ export function SavingsInsights() {
         <div className="p-4 rounded-lg bg-muted/30">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <KESSIGN className="h-4 w-4 text-success" />
+              < className="h-4 w-4 text-success" />
               <span className="font-medium text-sm"> Monthly Savings Rate</span>
             </div>
             <span className={`font-bold ${savingsRate > 20 ? 'text-success' : savingsRate > 10 ? 'text-warning' : 'text-destructive'}`}>
