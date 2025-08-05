@@ -22,7 +22,7 @@ export function FinancialOverview() {
     <div className="grid grid-cols-2 gap-4 p-4">
       <FinancialCard
         title="Total Balance"
-        value={`Ksh{balance.toLocaleString()}`}
+        value={`$${balance.toLocaleString()}`}
         trend={balance > 0 ? "up" : "down"}
         trendValue={balance > 0 ? "Positive balance" : "Negative balance"}
         icon={<DollarSign className="h-4 w-4" />}
@@ -30,7 +30,7 @@ export function FinancialOverview() {
       />
       <FinancialCard
         title="Monthly Expenses"
-        value={`Ksh{totalExpenses.toLocaleString()}`}
+        value={`$${totalExpenses.toLocaleString()}`}
         trend="down"
         trendValue="This month"
         icon={<TrendingDown className="h-4 w-4" />}
@@ -38,7 +38,7 @@ export function FinancialOverview() {
       />
       <FinancialCard
         title="Savings Goals"
-        value={`Ksh{totalGoalProgress.toFixed(0)}%`}
+        value={`${totalGoalProgress.toFixed(0)}%`}
         trend="up"
         trendValue="Average progress"
         icon={<Target className="h-4 w-4" />}
@@ -46,9 +46,9 @@ export function FinancialOverview() {
       />
       <FinancialCard
         title="Budget Remaining"
-        value={`Ksh{budgetRemaining.toLocaleString()}`}
+        value={`$${budgetRemaining.toLocaleString()}`}
         trend={budgetRemaining > 0 ? "up" : "down"}
-        trendValue={`Ksh{((budgetRemaining / monthlyBudget) * 100).toFixed(0)}% left`}
+        trendValue={`${((budgetRemaining / monthlyBudget) * 100).toFixed(0)}% left`}
         icon={<TrendingUp className="h-4 w-4" />}
         variant="default"
       />

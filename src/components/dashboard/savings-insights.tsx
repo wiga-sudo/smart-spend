@@ -77,15 +77,16 @@ export function SavingsInsights() {
               <DollarSign className="h-4 w-4 text-success" />
               <span className="font-medium text-sm">Monthly Savings Rate</span>
             </div>
-            <span className={`font-bold Ksh{savingsRate > 20 ? 'text-success' : savingsRate > 10 ? 'text-warning' : 'text-destructive'}`}>
+            <span className={`font-bold ${savingsRate > 20 ? 'text-success' : savingsRate > 10 ? 'text-warning' : 'text-destructive'}`}>
               {savingsRate.toFixed(1)}%
             </span>
           </div>
           <Progress 
             value={Math.min(savingsRate, 100)} 
-            className="h-2"/>
+            className="h-2"
+          />
           <p className="text-xs text-muted-foreground mt-1">
-            Saving Ksh{monthlySavings.toFixed(2)} of Ksh{totalIncome.toFixed(2)} monthly income
+            Saving ${monthlySavings.toFixed(2)} of ${totalIncome.toFixed(2)} monthly income
           </p>
         </div>
 
@@ -95,7 +96,7 @@ export function SavingsInsights() {
             <div key={goal.id} className="p-3 rounded-lg border">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">{goal.name}</span>
-                <span className={`text-sm font-semibold Ksh{getStatusColor(goal.status)}`}>
+                <span className={`text-sm font-semibold ${getStatusColor(goal.status)}`}>
                   {goal.progress.toFixed(0)}%
                 </span>
               </div>
@@ -107,18 +108,18 @@ export function SavingsInsights() {
               
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Ksh{goal.currentAmount.toFixed(2)} / Ksh{goal.targetAmount.toFixed(2)}</span>
+                  <span>${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}</span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {goal.daysUntilDeadline > 0 ? `Ksh{goal.daysUntilDeadline} days left` : 'Overdue'}
+                    {goal.daysUntilDeadline > 0 ? `${goal.daysUntilDeadline} days left` : 'Overdue'}
                   </span>
                 </div>
                 
                 {goal.status !== 'completed' && (
-                  <p className={`text-xs Ksh{getStatusColor(goal.status)}`}>
+                  <p className={`text-xs ${getStatusColor(goal.status)}`}>
                     {goal.status === 'ahead' && `Great! You're ahead of schedule`}
-                    {goal.status === 'on-track' && `Need Ksh{goal.requiredMonthlySaving.toFixed(2)}/month to reach goal`}
-                    {goal.status === 'behind' && `Behind schedule - need Ksh{goal.requiredMonthlySaving.toFixed(2)}/month`}
+                    {goal.status === 'on-track' && `Need $${goal.requiredMonthlySaving.toFixed(2)}/month to reach goal`}
+                    {goal.status === 'behind' && `Behind schedule - need $${goal.requiredMonthlySaving.toFixed(2)}/month`}
                   </p>
                 )}
               </div>

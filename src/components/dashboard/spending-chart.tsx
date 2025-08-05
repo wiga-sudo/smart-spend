@@ -78,7 +78,7 @@ export function SpendingChart({ variant = 'pie' }: SpendingChartProps) {
             dataKey="value"
           >
             {spendingData.map((entry, index) => (
-              <Cell key={`cell-Ksh{index}`} fill={entry.color} />
+              <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip 

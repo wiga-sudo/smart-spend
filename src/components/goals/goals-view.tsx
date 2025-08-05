@@ -43,7 +43,7 @@ export function GoalsView() {
 
     toast({
       title: "Goal created",
-      description: `Your goal "Ksh{formData.name}" has been added.`
+      description: `Your goal "${formData.name}" has been added.`
     })
 
     setFormData({ name: "", targetAmount: "", deadline: "", description: "" })
@@ -59,7 +59,7 @@ export function GoalsView() {
 
     toast({
       title: "Progress updated",
-      description: `Added Ksh{amount} to Ksh{goal.name}`
+      description: `Added $${amount} to ${goal.name}`
     })
   }
 
@@ -67,7 +67,7 @@ export function GoalsView() {
     deleteGoal(id)
     toast({
       title: "Goal deleted",
-      description: `Ksh{name} has been removed.`
+      description: `${name} has been removed.`
     })
   }
 
@@ -106,11 +106,11 @@ export function GoalsView() {
               </div>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-success">Ksh{totalSaved.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-success">${totalSaved.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Total Saved</p>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">Ksh{totalGoalValue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">${totalGoalValue.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Target Amount</p>
                 </div>
               </div>
@@ -234,11 +234,11 @@ export function GoalsView() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Saved: </span>
-                        <span className="font-medium">Ksh{goal.currentAmount.toLocaleString()}</span>
+                        <span className="font-medium">${goal.currentAmount.toLocaleString()}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Target: </span>
-                        <span className="font-medium">Ksh{goal.targetAmount.toLocaleString()}</span>
+                        <span className="font-medium">${goal.targetAmount.toLocaleString()}</span>
                       </div>
                     </div>
 
@@ -246,7 +246,7 @@ export function GoalsView() {
                       <Calendar className="h-4 w-4" />
                       <span>
                         {daysLeft > 0 
-                          ? `Ksh{daysLeft} days left (Ksh{format(new Date(goal.deadline), 'MMM dd, yyyy')})`
+                          ? `${daysLeft} days left (${format(new Date(goal.deadline), 'MMM dd, yyyy')})`
                           : isCompleted 
                             ? "Goal completed!" 
                             : "Deadline passed"
