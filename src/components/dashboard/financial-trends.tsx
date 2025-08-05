@@ -154,7 +154,7 @@ export function FinancialTrends() {
                   fontSize: '12px'
                 }}
                 formatter={(value: any, name: string) => [
-                  `$${Math.abs(value).toFixed(0)}`,
+                  `Ksh. ${Math.abs(value).toLocaleString()}`,
                   name.charAt(0).toUpperCase() + name.slice(1)
                 ]}
               />

@@ -61,7 +61,7 @@ export function BudgetView() {
 
     toast({
       title: "Budget created",
-      description: `Budget for ${formData.category} has been set to $${formData.budgeted}.`
+      description: `Budget for ${formData.category} has been set to Ksh. ${parseFloat(formData.budgeted).toLocaleString()}.`
     })
 
     setFormData({ category: "", budgeted: "", month: formData.month })
@@ -125,12 +125,12 @@ export function BudgetView() {
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className={`text-2xl font-bold ${totalSpent > totalBudgeted ? 'text-destructive' : 'text-foreground'}`}>
-                    ${totalSpent.toLocaleString()}
+                    Ksh. {totalSpent.toLocaleString()}
                   </div>
                   <p className="text-xs text-muted-foreground">Spent This Month</p>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">${totalBudgeted.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">Ksh. {totalBudgeted.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Total Budget</p>
                 </div>
               </div>
@@ -271,19 +271,19 @@ export function BudgetView() {
                       <div>
                         <span className="text-muted-foreground">Spent: </span>
                         <span className={`font-medium ${isOverBudget ? 'text-destructive' : ''}`}>
-                          ${budget.spent.toFixed(2)}
+                          Ksh. {budget.spent.toLocaleString()}
                         </span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Budget: </span>
-                        <span className="font-medium">${budget.budgeted.toFixed(2)}</span>
+                        <span className="font-medium">Ksh. {budget.budgeted.toLocaleString()}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">
                           {remaining >= 0 ? 'Remaining: ' : 'Over by: '}
                         </span>
                         <span className={`font-medium ${remaining < 0 ? 'text-destructive' : 'text-success'}`}>
-                          ${Math.abs(remaining).toFixed(2)}
+                          Ksh. {Math.abs(remaining).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -292,7 +292,7 @@ export function BudgetView() {
                       <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
                         <div className="flex items-center gap-2 text-destructive text-sm">
                           <AlertTriangle className="h-4 w-4" />
-                          <span className="font-medium">Over budget by ${Math.abs(remaining).toFixed(2)}</span>
+                          <span className="font-medium">Over budget by Ksh. {Math.abs(remaining).toLocaleString()}</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
                           Consider reducing spending in this category

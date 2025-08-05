@@ -86,7 +86,7 @@ export function SavingsInsights() {
             className="h-2"
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Saving ${monthlySavings.toFixed(2)} of ${totalIncome.toFixed(2)} monthly income
+            Saving Ksh. {monthlySavings.toLocaleString()} of Ksh. {totalIncome.toLocaleString()} monthly income
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export function SavingsInsights() {
               
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}</span>
+                  <span>Ksh. {goal.currentAmount.toLocaleString()} / Ksh. {goal.targetAmount.toLocaleString()}</span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {goal.daysUntilDeadline > 0 ? `${goal.daysUntilDeadline} days left` : 'Overdue'}
@@ -118,8 +118,8 @@ export function SavingsInsights() {
                 {goal.status !== 'completed' && (
                   <p className={`text-xs ${getStatusColor(goal.status)}`}>
                     {goal.status === 'ahead' && `Great! You're ahead of schedule`}
-                    {goal.status === 'on-track' && `Need $${goal.requiredMonthlySaving.toFixed(2)}/month to reach goal`}
-                    {goal.status === 'behind' && `Behind schedule - need $${goal.requiredMonthlySaving.toFixed(2)}/month`}
+                    {goal.status === 'on-track' && `Need Ksh. ${goal.requiredMonthlySaving.toLocaleString()}/month to reach goal`}
+                    {goal.status === 'behind' && `Behind schedule - need Ksh. ${goal.requiredMonthlySaving.toLocaleString()}/month`}
                   </p>
                 )}
               </div>

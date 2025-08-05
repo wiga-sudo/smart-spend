@@ -3,12 +3,12 @@ import { ChartContainer } from '@/components/ui/chart-container'
 import { useFinancialStore } from '@/store/financial-store'
 
 const monthlyData = [
-  { month: 'Jan', income: 4000, expenses: 2400 },
-  { month: 'Feb', income: 4200, expenses: 2800 },
-  { month: 'Mar', income: 4100, expenses: 2600 },
-  { month: 'Apr', income: 4300, expenses: 2900 },
-  { month: 'May', income: 4150, expenses: 2650 },
-  { month: 'Jun', income: 4400, expenses: 3100 },
+  { month: 'Jan', income: 400000, expenses: 240000 },
+  { month: 'Feb', income: 420000, expenses: 280000 },
+  { month: 'Mar', income: 410000, expenses: 260000 },
+  { month: 'Apr', income: 430000, expenses: 290000 },
+  { month: 'May', income: 415000, expenses: 265000 },
+  { month: 'Jun', income: 440000, expenses: 310000 },
 ]
 
 interface SpendingChartProps {
