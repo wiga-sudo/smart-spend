@@ -55,16 +55,16 @@ export function ProfileView() {
   const { transactions, budgets, goals } = useFinancialStore()
   const { toast } = useToast()
   
+ ",
+    language: "en", const [profile, setProfile] = useState<UserProfile>({
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    phoneNumber: "+1 (555) 123-4567",
+    currency: "USD
+    timezone: "America/New_York"
+  })
 
-const [profile, setProfile] = useState<UserProfile>({
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phoneNumber: "",
-  currency: "KES",
-  language: "en",
-  timezone: "Africa/Nairobi"
-});
   const [notifications, setNotifications] = useState<NotificationSettings>({
     budgetAlerts: true,
     goalReminders: true,
