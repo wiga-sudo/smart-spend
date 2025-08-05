@@ -60,7 +60,7 @@ export function RecentTransactions() {
                 transaction.type === 'income' 
                   ? 'text-success' 
                   : 'text-destructive'
-              }`}>
+              }>
                 {transaction.type === 'income' ? '+' : ''}KshMath.abs(transaction.amount).toFixed(2)}
               </div>
               <Button
