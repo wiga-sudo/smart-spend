@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { useFinancialStore } from "@/store/financial-store"
 import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/lib/supabase" // adjust path as needed
 
 interface UserProfile {
   firstName: string
@@ -54,13 +55,13 @@ export function ProfileView() {
   const { transactions, budgets, goals } = useFinancialStore()
   const { toast } = useToast()
   
-  const [profile, setProfile] = useState<UserProfile>({
+ ",
+    language: "en", const [profile, setProfile] = useState<UserProfile>({
     firstName: "John",
     lastName: "Doe",
     email: "john.doe@example.com",
     phoneNumber: "+1 (555) 123-4567",
-    currency: "USD",
-    language: "en",
+    currency: "USD
     timezone: "America/New_York"
   })
 
@@ -82,11 +83,32 @@ export function ProfileView() {
   const [activeSection, setActiveSection] = useState<string>("profile")
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  const handleProfileUpdate = () => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully."
-    })
+  async function handleProfileUpdate() {
+    const { error } = await supabase
+      .from("profiles") // or your table name
+      .update({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        currency: profile.currency, // ensure currency is
+        language: profile.language,
+        timezone: profile.timezone
+      })
+      .eq("id", supabase.auth.user()?.id) // assuming you're using supabase auth
+
+    if (error) {
+      toast({
+        title: "Profile update failed",
+        description: error.message,
+        variant: "destructive"
+      })
+    } else {
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been saved successfully."
+      })
+    }
   }
 
   const handleNotificationUpdate = (key: keyof NotificationSettings, value: boolean) => {
@@ -375,6 +397,7 @@ export function ProfileView() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="KES">KES (Ksh)</SelectItem>
                         <SelectItem value="USD">USD ($)</SelectItem>
                         <SelectItem value="EUR">EUR (€)</SelectItem>
                         <SelectItem value="GBP">GBP (£)</SelectItem>
