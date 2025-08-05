@@ -85,7 +85,7 @@ export function SavingsInsights() {
             value={Math.min(savingsRate, 100)} 
             className="h-2"/>
           <p className="text-xs text-muted-foreground mt-1">
-            Saving Ksh{monthlySavings.toFixed(2)} of Ksh{{totalIncome.toFixed(2)} monthly income
+            Saving Ksh{monthlySavings.toFixed(2)} of Ksh{totalIncome.toFixed(2)} monthly income
           </p>
         </div>
 

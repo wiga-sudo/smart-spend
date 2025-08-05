@@ -61,7 +61,7 @@ export function BudgetView() {
 
     toast({
       title: "Budget created",
-      description: `Budget for Ksh{{formData.category} has been set to Ksh{{formData.budgeted}.`
+      description: `Budget for Ksh{formData.category} has been set to Ksh{formData.budgeted}.`
     })
 
     setFormData({ category: "", budgeted: "", month: formData.month })
@@ -72,7 +72,7 @@ export function BudgetView() {
     deleteBudget(id)
     toast({
       title: "Budget deleted",
-      description: `Budget for Ksh{{category} has been removed.`
+      description: `Budget for Ksh{category} has been removed.`
     })
   }
 
@@ -257,7 +257,7 @@ export function BudgetView() {
                       </div>
                       <Progress 
                         value={Math.min(progress, 100)} 
-                        className={`h-2 Ksh{isOverBudget ? 'bg-destructive/20' : ''}`}
+                        className={`h-2 {isOverBudget ? 'bg-destructive/20' : ''}`}
                       />
                       {isOverBudget && (
                         <Progress 
