@@ -57,12 +57,14 @@ export function ProfileView() {
   
 
 const [profile, setProfile] = useState<UserProfile>({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    language: "en",
+  firstName: "John",
+  lastName: "Doe",
+  email: "john.doe@example.com",
+  phoneNumber: "",
+  currency: "KES",
+  language: "en",
+  timezone: "Africa/Nairobi"
 });
-// ...existing code...
   const [notifications, setNotifications] = useState<NotificationSettings>({
     budgetAlerts: true,
     goalReminders: true,
