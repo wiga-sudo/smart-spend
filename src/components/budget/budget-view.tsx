@@ -61,7 +61,7 @@ export function BudgetView() {
 
     toast({
       title: "Budget created",
-      description: `Budget for KshformData.category} has been set to $KshformData.budgeted}.`
+      description: `Budget for Ksh{{formData.category} has been set to Ksh{{formData.budgeted}.`
     })
 
     setFormData({ category: "", budgeted: "", month: formData.month })
@@ -72,7 +72,7 @@ export function BudgetView() {
     deleteBudget(id)
     toast({
       title: "Budget deleted",
-      description: `Budget for Kshcategory} has been removed.`
+      description: `Budget for Ksh{{category} has been removed.`
     })
   }
 
@@ -119,18 +119,18 @@ export function BudgetView() {
                 </div>
                 <Progress 
                   value={overallProgress} 
-                  className={`h-2 KshoverallProgress > 100 ? 'text-destructive' : ''}`}
+                  className={`h-2 Ksh{overallProgress > 100 ? 'text-destructive' : ''}`}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className={`text-2xl font-bold KshtotalSpent > totalBudgeted ? 'text-destructive' : 'text-foreground'}`}>
-                    KshtotalSpent.toLocaleString()}
+                  <div className={`text-2xl font-bold Ksh{totalSpent > totalBudgeted ? 'text-destructive' : 'text-foreground'}`}>
+                    Ksh{totalSpent.toLocaleString()}
                   </div>
                   <p className="text-xs text-muted-foreground">Spent This Month</p>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">KshtotalBudgeted.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">Ksh{totalBudgeted.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Total Budget</p>
                 </div>
               </div>
@@ -251,13 +251,13 @@ export function BudgetView() {
                         <span className="text-sm text-muted-foreground">
                           {isOverBudget ? "Over budget" : "Spent"}
                         </span>
-                        <span className={`text-sm font-medium KshisOverBudget ? 'text-destructive' : ''}`}>
+                        <span className={`text-sm font-medium Ksh{isOverBudget ? 'text-destructive' : ''}`}>
                           {progress.toFixed(0)}%
                         </span>
                       </div>
                       <Progress 
                         value={Math.min(progress, 100)} 
-                        className={`h-2 KshisOverBudget ? 'bg-destructive/20' : ''}`}
+                        className={`h-2 Ksh{isOverBudget ? 'bg-destructive/20' : ''}`}
                       />
                       {isOverBudget && (
                         <Progress 
@@ -270,20 +270,20 @@ export function BudgetView() {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Spent: </span>
-                        <span className={`font-medium KshisOverBudget ? 'text-destructive' : ''}`}>
-                          Kshbudget.spent.toFixed(2)}
+                        <span className={`font-medium Ksh{isOverBudget ? 'text-destructive' : ''}`}>
+                          Ksh{budget.spent.toFixed(2)}
                         </span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Budget: </span>
-                        <span className="font-medium">Kshbudget.budgeted.toFixed(2)}</span>
+                        <span className="font-medium">Ksh{budget.budgeted.toFixed(2)}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">
                           {remaining >= 0 ? 'Remaining: ' : 'Over by: '}
                         </span>
-                        <span className={`font-medium Kshremaining < 0 ? 'text-destructive' : 'text-success'}`}>
-                          KshMath.abs(remaining).toFixed(2)}
+                        <span className={`font-medium Ksh{remaining < 0 ? 'text-destructive' : 'text-success'}`}>
+                          Ksh{Math.abs(remaining).toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -292,7 +292,7 @@ export function BudgetView() {
                       <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
                         <div className="flex items-center gap-2 text-destructive text-sm">
                           <AlertTriangle className="h-4 w-4" />
-                          <span className="font-medium">Over budget by KshMath.abs(remaining).toFixed(2)}</span>
+                          <span className="font-medium">Over budget by Ksh{Math.abs(remaining).toFixed(2)}</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
                           Consider reducing spending in this category
