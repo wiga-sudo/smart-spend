@@ -93,7 +93,7 @@ export function ProfileView() {
     setNotifications(prev => ({ ...prev, [key]: value }))
     toast({
       title: "Notification settings updated",
-      description: `Ksh{key} has been Ksh{value ? 'enabled' : 'disabled'}.`
+      description: `Kshkey} has been Kshvalue ? 'enabled' : 'disabled'}.`
     })
   }
 
@@ -118,7 +118,7 @@ export function ProfileView() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `smartspend-data-Ksh{new Date().toISOString().split('T')[0]}.json`
+    a.download = `smartspend-data-Kshnew Date().toISOString().split('T')[0]}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

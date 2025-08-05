@@ -56,12 +56,12 @@ export function RecentTransactions() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`font-semibold Ksh{
+              <div className={`font-semibold Ksh
                 transaction.type === 'income' 
                   ? 'text-success' 
                   : 'text-destructive'
               }`}>
-                {transaction.type === 'income' ? '+' : ''}Ksh{Math.abs(transaction.amount).toFixed(2)}
+                {transaction.type === 'income' ? '+' : ''}KshMath.abs(transaction.amount).toFixed(2)}
               </div>
               <Button
                 variant="ghost"

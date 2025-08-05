@@ -104,7 +104,7 @@ export function FinancialTrends() {
               {getTrendIcon(incomeTrend.direction)}
               <span className="text-xs font-medium">Income</span>
             </div>
-            <div className={`text-sm font-bold Ksh{getTrendColor(incomeTrend.direction)}`}>
+            <div className={`text-sm font-bold KshgetTrendColor(incomeTrend.direction)}`}>
               {incomeTrend.direction !== 'neutral' && (incomeTrend.direction === 'up' ? '+' : '-')}
               {incomeTrend.percentage.toFixed(1)}%
             </div>
@@ -115,7 +115,7 @@ export function FinancialTrends() {
               {getTrendIcon(expenseTrend.direction)}
               <span className="text-xs font-medium">Expenses</span>
             </div>
-            <div className={`text-sm font-bold Ksh{getTrendColor(expenseTrend.direction, true)}`}>
+            <div className={`text-sm font-bold KshgetTrendColor(expenseTrend.direction, true)}`}>
               {expenseTrend.direction !== 'neutral' && (expenseTrend.direction === 'up' ? '+' : '-')}
               {expenseTrend.percentage.toFixed(1)}%
             </div>
@@ -126,7 +126,7 @@ export function FinancialTrends() {
               {getTrendIcon(savingsTrend.direction)}
               <span className="text-xs font-medium">Savings</span>
             </div>
-            <div className={`text-sm font-bold Ksh{getTrendColor(savingsTrend.direction)}`}>
+            <div className={`text-sm font-bold KshgetTrendColor(savingsTrend.direction)}`}>
               {savingsTrend.direction !== 'neutral' && (savingsTrend.direction === 'up' ? '+' : '-')}
               {savingsTrend.percentage.toFixed(1)}%
             </div>
@@ -154,7 +154,7 @@ export function FinancialTrends() {
                   fontSize: '12px'
                 }}
                 formatter={(value: any, name: string) => [
-                  `$Ksh{Math.abs(value).toFixed(0)}`,
+                  `$KshMath.abs(value).toFixed(0)}`,
                   name.charAt(0).toUpperCase() + name.slice(1)
                 ]}
               />

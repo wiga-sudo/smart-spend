@@ -42,7 +42,7 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
-  const chartId = `chart-Ksh{id || uniqueId.replace(/:/g, "")}`
+  const chartId = `chart-Kshid || uniqueId.replace(/:/g, "")}`
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -80,13 +80,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-Ksh{prefix} [data-chart=Ksh{id}] {
-Ksh{colorConfig
+Kshprefix} [data-chart=Kshid}] {
+KshcolorConfig
   .map(([key, itemConfig]) => {
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-Ksh{key}: Ksh{color};` : null
+    return color ? `  --color-Kshkey}: Kshcolor};` : null
   })
   .join("\n")}
 }
@@ -140,7 +140,7 @@ const ChartTooltipContent = React.forwardRef<
       }
 
       const [item] = payload
-      const key = `Ksh{labelKey || item.dataKey || item.name || "value"}`
+      const key = `KshlabelKey || item.dataKey || item.name || "value"}`
       const itemConfig = getPayloadConfigFromPayload(config, item, key)
       const value =
         !labelKey && typeof label === "string"
@@ -187,7 +187,7 @@ const ChartTooltipContent = React.forwardRef<
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">
           {payload.map((item, index) => {
-            const key = `Ksh{nameKey || item.name || item.dataKey || "value"}`
+            const key = `KshnameKey || item.name || item.dataKey || "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
             const indicatorColor = color || item.payload.fill || item.color
 
@@ -288,7 +288,7 @@ const ChartLegendContent = React.forwardRef<
         )}
       >
         {payload.map((item) => {
-          const key = `Ksh{nameKey || item.dataKey || "value"}`
+          const key = `KshnameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
           return (

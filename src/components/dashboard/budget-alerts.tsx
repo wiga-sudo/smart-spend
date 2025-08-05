@@ -49,13 +49,13 @@ export function BudgetAlerts() {
   const getStatusMessage = (budget: any) => {
     switch (budget.status) {
       case 'over':
-        return `Over budget by $Ksh{Math.abs(budget.remaining).toFixed(2)}`
+        return `Over budget by $KshMath.abs(budget.remaining).toFixed(2)}`
       case 'danger':
-        return `Only $Ksh{budget.remaining.toFixed(2)} left`
+        return `Only $Kshbudget.remaining.toFixed(2)} left`
       case 'warning':
-        return `$Ksh{budget.remaining.toFixed(2)} remaining`
+        return `$Kshbudget.remaining.toFixed(2)} remaining`
       default:
-        return `$Ksh{budget.remaining.toFixed(2)} remaining`
+        return `$Kshbudget.remaining.toFixed(2)} remaining`
     }
   }
 
@@ -94,14 +94,14 @@ export function BudgetAlerts() {
                   </Badge>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Ksh{budget.spent.toFixed(2)} / Ksh{budget.budgeted.toFixed(2)}
+                  Kshbudget.spent.toFixed(2)} / Kshbudget.budgeted.toFixed(2)}
                 </div>
               </div>
               <Progress 
                 value={budget.percentage} 
                 className="h-2"
               />
-              <p className={`text-xs Ksh{getStatusColor(budget.status)}`}>
+              <p className={`text-xs KshgetStatusColor(budget.status)}`}>
                 {getStatusMessage(budget)}
               </p>
             </div>
