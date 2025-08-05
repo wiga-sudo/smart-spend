@@ -53,7 +53,7 @@ export function ExpensesView() {
 
     toast({
       title: "Transaction added",
-      description: `${formData.type === "income" ? "Income" : "Expense"} of $${Math.abs(amount).toFixed(2)} has been recorded.`
+      description: `Ksh{formData.type === "income" ? "Income" : "Expense"} of $Ksh{Math.abs(amount).toFixed(2)} has been recorded.`
     })
 
     setFormData({ description: "", amount: "", category: "", type: "expense" })
@@ -64,7 +64,7 @@ export function ExpensesView() {
     deleteTransaction(id)
     toast({
       title: "Transaction deleted",
-      description: `${description} has been removed.`
+      description: `Ksh{description} has been removed.`
     })
   }
 
@@ -97,7 +97,7 @@ export function ExpensesView() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-destructive">
-              ${totalExpenses.toFixed(2)}
+              Ksh{totalExpenses.toFixed(2)}
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               {expenseTransactions.length} transactions this month
@@ -231,12 +231,12 @@ export function ExpensesView() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className={`font-semibold ${
+                      <div className={`font-semibold Ksh{
                         transaction.type === 'income' 
                           ? 'text-success' 
                           : 'text-destructive'
                       }`}>
-                        {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                        {transaction.type === 'income' ? '+' : '-'}Ksh{Math.abs(transaction.amount).toFixed(2)}
                       </div>
                       <Button
                         variant="ghost"
