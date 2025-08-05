@@ -59,7 +59,7 @@ export function GoalsView() {
 
     toast({
       title: "Progress updated",
-      description: `Added $${amount} to ${goal.name}`
+      description: `Added Ksh. ${amount.toLocaleString()} to ${goal.name}`
     })
   }
 
@@ -106,11 +106,11 @@ export function GoalsView() {
               </div>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-success">${totalSaved.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-success">Ksh. {totalSaved.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Total Saved</p>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">${totalGoalValue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">Ksh. {totalGoalValue.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Target Amount</p>
                 </div>
               </div>
@@ -234,11 +234,11 @@ export function GoalsView() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Saved: </span>
-                        <span className="font-medium">${goal.currentAmount.toLocaleString()}</span>
+                        <span className="font-medium">Ksh. {goal.currentAmount.toLocaleString()}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Target: </span>
-                        <span className="font-medium">${goal.targetAmount.toLocaleString()}</span>
+                        <span className="font-medium">Ksh. {goal.targetAmount.toLocaleString()}</span>
                       </div>
                     </div>
 
@@ -259,26 +259,26 @@ export function GoalsView() {
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          onClick={() => handleAddMoney(goal.id, 50)}
+                          onClick={() => handleAddMoney(goal.id, 5000)}
                           className="flex-1"
                         >
-                          +$50
+                          +Ksh. 5,000
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          onClick={() => handleAddMoney(goal.id, 100)}
+                          onClick={() => handleAddMoney(goal.id, 10000)}
                           className="flex-1"
                         >
-                          +$100
+                          +Ksh. 10,000
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          onClick={() => handleAddMoney(goal.id, 250)}
+                          onClick={() => handleAddMoney(goal.id, 25000)}
                           className="flex-1"
                         >
-                          +$250
+                          +Ksh. 25,000
                         </Button>
                       </div>
                     )}

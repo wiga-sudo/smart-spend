@@ -59,7 +59,7 @@ export function ProfileView() {
     lastName: "Doe",
     email: "john.doe@example.com",
     phoneNumber: "+1 (555) 123-4567",
-    currency: "USD",
+    currency: "KES",
     language: "en",
     timezone: "America/New_York"
   })
@@ -367,21 +367,9 @@ export function ProfileView() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="currency">Currency</Label>
-                    <Select 
-                      value={profile.currency} 
-                      onValueChange={(value) => setProfile(prev => ({ ...prev, currency: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="USD">USD ($)</SelectItem>
-                        <SelectItem value="EUR">EUR (€)</SelectItem>
-                        <SelectItem value="GBP">GBP (£)</SelectItem>
-                        <SelectItem value="CAD">CAD (C$)</SelectItem>
-                        <SelectItem value="AUD">AUD (A$)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="p-2 border rounded-md bg-muted/50">
+                      <span className="text-sm">KES (Ksh.)</span>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="language">Language</Label>

@@ -61,7 +61,7 @@ export function RecentTransactions() {
                   ? 'text-success' 
                   : 'text-destructive'
               }`}>
-                {transaction.type === 'income' ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                {transaction.type === 'income' ? '+' : ''}Ksh. {Math.abs(transaction.amount).toLocaleString()}
               </div>
               <Button
                 variant="ghost"

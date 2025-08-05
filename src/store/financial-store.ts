@@ -62,7 +62,7 @@ export const useFinancialStore = create<FinancialState>()(
         {
           id: '1',
           description: 'Salary Deposit',
-          amount: 4200,
+          amount: 420000,
           category: 'Income',
           date: new Date(2024, 7, 1),
           type: 'income'
@@ -70,7 +70,7 @@ export const useFinancialStore = create<FinancialState>()(
         {
           id: '2',
           description: 'Grocery Store',
-          amount: -85.50,
+          amount: -8550,
           category: 'Food',
           date: new Date(2024, 7, 3),
           type: 'expense'
@@ -78,7 +78,7 @@ export const useFinancialStore = create<FinancialState>()(
         {
           id: '3',
           description: 'Gas Station',
-          amount: -45.20,
+          amount: -4520,
           category: 'Transport',
           date: new Date(2024, 7, 2),
           type: 'expense'
@@ -86,25 +86,25 @@ export const useFinancialStore = create<FinancialState>()(
       ],
       
       budgets: [
-        { id: '1', category: 'Food', budgeted: 500, spent: 245, month: '2024-08' },
-        { id: '2', category: 'Transport', budgeted: 300, spent: 125, month: '2024-08' },
-        { id: '3', category: 'Entertainment', budgeted: 200, spent: 89, month: '2024-08' },
+        { id: '1', category: 'Food', budgeted: 50000, spent: 24500, month: '2024-08' },
+        { id: '2', category: 'Transport', budgeted: 30000, spent: 12500, month: '2024-08' },
+        { id: '3', category: 'Entertainment', budgeted: 20000, spent: 8900, month: '2024-08' },
       ],
       
       goals: [
         {
           id: '1',
           name: 'Emergency Fund',
-          targetAmount: 10000,
-          currentAmount: 6500,
+          targetAmount: 1000000,
+          currentAmount: 650000,
           deadline: new Date(2024, 11, 31),
           description: 'Build 6 months of expenses'
         },
         {
           id: '2',
           name: 'Vacation',
-          targetAmount: 3000,
-          currentAmount: 1200,
+          targetAmount: 300000,
+          currentAmount: 120000,
           deadline: new Date(2024, 10, 15),
           description: 'Summer vacation to Europe'
         }
