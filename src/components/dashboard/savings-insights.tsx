@@ -83,8 +83,7 @@ export function SavingsInsights() {
           </div>
           <Progress 
             value={Math.min(savingsRate, 100)} 
-            className="h-2"
-          />
+            className="h-2"/>
           <p className="text-xs text-muted-foreground mt-1">
             Saving KshmonthlySavings.toFixed(2)} of KshtotalIncome.toFixed(2)} monthly income
           </p>
