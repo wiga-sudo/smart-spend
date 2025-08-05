@@ -7,7 +7,6 @@ import { GoalsView } from "@/components/goals/goals-view"
 import { BudgetView } from "@/components/budget/budget-view"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Profile component
 function ProfileView() {
   return (
     <div className="p-4 pb-20">
