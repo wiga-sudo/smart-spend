@@ -5,23 +5,7 @@ import { DashboardView } from "@/components/dashboard/dashboard-view"
 import { ExpensesView } from "@/components/expenses/expenses-view"
 import { GoalsView } from "@/components/goals/goals-view"
 import { BudgetView } from "@/components/budget/budget-view"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
-function ProfileView() {
-  return (
-    <div className="p-4 pb-20">
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Settings</CardTitle>
-          <CardDescription>Manage your account and preferences</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Profile settings coming soon...</p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
+import { ProfileView } from "@/components/profile/profile-view"
 
 export function SmartSpendApp() {
   const [activeTab, setActiveTab] = useState("dashboard")
