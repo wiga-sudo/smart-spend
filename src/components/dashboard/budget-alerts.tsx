@@ -49,13 +49,13 @@ export function BudgetAlerts() {
   const getStatusMessage = (budget: any) => {
     switch (budget.status) {
       case 'over':
-        return `Over budget by $${Math.abs(budget.remaining).toFixed(2)}`
+        return `Over budget by $Ksh. {Math.abs(budget.remaining).toFixed(2)}`
       case 'danger':
-        return `Only $${budget.remaining.toFixed(2)} left`
+        return `Only $Ksh. {budget.remaining.toFixed(2)} left`
       case 'warning':
-        return `$${budget.remaining.toFixed(2)} remaining`
+        return `$Ksh. {budget.remaining.toFixed(2)} remaining`
       default:
-        return `$${budget.remaining.toFixed(2)} remaining`
+        return `$Ksh. {budget.remaining.toFixed(2)} remaining`
     }
   }
 
