@@ -106,7 +106,7 @@ export function GoalsView() {
               </div>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-success">Ksh{{totalSaved.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-success">Ksh{totalSaved.toLocaleString()}</div>
                   <p className="text-xs text-muted-foreground">Total Saved</p>
                 </div>
                 <div>
