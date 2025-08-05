@@ -2,57 +2,12 @@ import { useState } from "react"
 import { AppHeader } from "@/components/layout/app-header"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { DashboardView } from "@/components/dashboard/dashboard-view"
+import { ExpensesView } from "@/components/expenses/expenses-view"
+import { GoalsView } from "@/components/goals/goals-view"
+import { BudgetView } from "@/components/budget/budget-view"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Placeholder components for other views
-function ExpensesView() {
-  return (
-    <div className="p-4 pb-20">
-      <Card>
-        <CardHeader>
-          <CardTitle>Expense Tracking</CardTitle>
-          <CardDescription>Track and categorize your expenses</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Expense tracking features coming soon...</p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-function GoalsView() {
-  return (
-    <div className="p-4 pb-20">
-      <Card>
-        <CardHeader>
-          <CardTitle>Savings Goals</CardTitle>
-          <CardDescription>Set and track your financial goals</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Savings goals features coming soon...</p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-function BudgetView() {
-  return (
-    <div className="p-4 pb-20">
-      <Card>
-        <CardHeader>
-          <CardTitle>Budget Management</CardTitle>
-          <CardDescription>Create and manage your monthly budgets</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Budget management features coming soon...</p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
+// Profile component
 function ProfileView() {
   return (
     <div className="p-4 pb-20">

@@ -1,13 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 import { ChartContainer } from '@/components/ui/chart-container'
-
-const spendingData = [
-  { name: 'Food', value: 400, color: 'hsl(var(--expense-color))' },
-  { name: 'Transport', value: 300, color: 'hsl(var(--primary))' },
-  { name: 'Entertainment', value: 200, color: 'hsl(var(--warning))' },
-  { name: 'Shopping', value: 150, color: 'hsl(var(--accent))' },
-  { name: 'Bills', value: 600, color: 'hsl(var(--destructive))' },
-]
+import { useFinancialStore } from '@/store/financial-store'
 
 const monthlyData = [
   { month: 'Jan', income: 4000, expenses: 2400 },
@@ -23,6 +16,24 @@ interface SpendingChartProps {
 }
 
 export function SpendingChart({ variant = 'pie' }: SpendingChartProps) {
+  const { getSpendingByCategory } = useFinancialStore()
+  
+  // Convert spending data to chart format
+  const spendingByCategory = getSpendingByCategory()
+  const spendingData = Object.entries(spendingByCategory).map(([category, amount], index) => {
+    const colors = [
+      'hsl(var(--expense-color))',
+      'hsl(var(--primary))',
+      'hsl(var(--warning))',
+      'hsl(var(--accent))',
+      'hsl(var(--destructive))'
+    ]
+    return {
+      name: category,
+      value: amount,
+      color: colors[index % colors.length]
+    }
+  })
   if (variant === 'bar') {
     return (
       <ChartContainer 

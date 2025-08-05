@@ -1,38 +1,54 @@
 import { DollarSign, TrendingUp, TrendingDown, Target } from "lucide-react"
 import { FinancialCard } from "@/components/ui/financial-card"
+import { useFinancialStore } from "@/store/financial-store"
 
 export function FinancialOverview() {
+  const { getTotalIncome, getTotalExpenses, getBalance, goals } = useFinancialStore()
+  
+  const totalIncome = getTotalIncome()
+  const totalExpenses = getTotalExpenses()
+  const balance = getBalance()
+  
+  // Calculate total progress on all goals
+  const totalGoalProgress = goals.reduce((sum, goal) => {
+    return sum + (goal.currentAmount / goal.targetAmount)
+  }, 0) / goals.length * 100
+
+  // Calculate monthly budget remaining (simplified)
+  const monthlyBudget = 3500 // This could be dynamic
+  const budgetRemaining = monthlyBudget - totalExpenses
+
   return (
     <div className="grid grid-cols-2 gap-4 p-4">
       <FinancialCard
         title="Total Balance"
-        value="$12,450"
-        trend="up"
-        trendValue="+2.5% from last month"
+        value={`$${balance.toLocaleString()}`}
+        trend={balance > 0 ? "up" : "down"}
+        trendValue={balance > 0 ? "Positive balance" : "Negative balance"}
         icon={<DollarSign className="h-4 w-4" />}
         variant="income"
       />
       <FinancialCard
         title="Monthly Expenses"
-        value="$3,240"
+        value={`$${totalExpenses.toLocaleString()}`}
         trend="down"
-        trendValue="-5.2% from last month"
+        trendValue="This month"
         icon={<TrendingDown className="h-4 w-4" />}
         variant="expense"
       />
       <FinancialCard
-        title="Savings Goal"
-        value="$8,500"
+        title="Savings Goals"
+        value={`${totalGoalProgress.toFixed(0)}%`}
         trend="up"
-        trendValue="68% completed"
+        trendValue="Average progress"
         icon={<Target className="h-4 w-4" />}
         variant="savings"
       />
       <FinancialCard
-        title="Budget Left"
-        value="$1,260"
-        trend="neutral"
-        trendValue="38% remaining"
+        title="Budget Remaining"
+        value={`$${budgetRemaining.toLocaleString()}`}
+        trend={budgetRemaining > 0 ? "up" : "down"}
+        trendValue={`${((budgetRemaining / monthlyBudget) * 100).toFixed(0)}% left`}
         icon={<TrendingUp className="h-4 w-4" />}
         variant="default"
       />
