@@ -1,13 +1,37 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.e5458f28a63f40859b73487964bf1e9e',
+  appId: 'com.smartspend.app',
   appName: 'SmartSpend',
   webDir: 'dist',
   server: {
-    url: 'https://e5458f28-a63f-4085-9b73-487964bf1e9e.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+    androidScheme: 'https'
   },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    },
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon_config_sample",
+      iconColor: "#488AFF",
+      sound: "beep.wav"
+    },
+    SplashScreen: {
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      backgroundColor: "#ffffffff",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
+      spinnerColor: "#999999"
+    },
+    StatusBar: {
+      style: "LIGHT_CONTENT",
+      backgroundColor: "#3B82F6"
+    }
+  }
 };
 
 export default config;

@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus, CreditCard, Trash2, AlertTriangle } from "lucide-react"
 import { useFinancialStore } from "@/store/financial-store"
 import { useToast } from "@/hooks/use-toast"
+import { usePushNotifications } from "@/hooks/use-push-notifications"
 
 const budgetCategories = [
   "Food", "Transport", "Entertainment", "Shopping", "Bills", 
@@ -17,6 +18,7 @@ const budgetCategories = [
 export function BudgetView() {
   const { budgets, addBudget, updateBudget, deleteBudget, getBudgetStatus, getSpendingByCategory } = useFinancialStore()
   const { toast } = useToast()
+  const { scheduleLocalNotification } = usePushNotifications()
   const [isAdding, setIsAdding] = useState(false)
   const [formData, setFormData] = useState({
     category: "",
@@ -86,6 +88,20 @@ export function BudgetView() {
       const actualSpent = spendingByCategory[budget.category] || 0
       if (actualSpent !== budget.spent) {
         updateBudget(budget.id, { spent: actualSpent })
+        
+        // Check if budget is exceeded and send notification
+        const percentage = (actualSpent / budget.budgeted) * 100
+        if (percentage >= 90 && percentage < 100) {
+          scheduleLocalNotification(
+            'Budget Alert',
+            `You've spent 90% of your ${budget.category} budget`
+          )
+        } else if (percentage >= 100) {
+          scheduleLocalNotification(
+            'Budget Exceeded',
+            `You've exceeded your ${budget.category} budget by Ksh. ${(actualSpent - budget.budgeted).toLocaleString()}`
+          )
+        }
       }
     })
   }, [spendingByCategory, budgets, updateBudget])

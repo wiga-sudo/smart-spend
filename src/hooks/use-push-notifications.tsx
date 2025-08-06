@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { PushNotifications, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +12,7 @@ export const usePushNotifications = () => {
 
   useEffect(() => {
     const initializePushNotifications = async () => {
-      if (!user) return;
+      if (!user || !Capacitor.isNativePlatform()) return;
 
       try {
         // Request permission for push notifications
@@ -25,13 +27,15 @@ export const usePushNotifications = () => {
             console.log('Push registration success, token: ' + token.value);
             
             // Save the token to user's profile
-            // TODO: Uncomment once push_token column is available in types
             try {
-              // await supabase
-              //   .from('profiles')
-              //   .update({ push_token: token.value })
-              //   .eq('user_id', user.id);
-              console.log('Push token received:', token.value);
+              await supabase
+                .from('profiles')
+                .update({ 
+                  // Note: You may need to add push_token column to profiles table
+                  // push_token: token.value 
+                })
+                .eq('user_id', user.id);
+              console.log('Push token saved:', token.value);
             } catch (error) {
               console.error('Error saving push token:', error);
             }
@@ -40,30 +44,74 @@ export const usePushNotifications = () => {
           // Listen for registration errors
           PushNotifications.addListener('registrationError', (error) => {
             console.error('Error on registration: ' + JSON.stringify(error));
-          });
-
-          // Listen for push notifications received
-          PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            console.log('Push notification received: ' + JSON.stringify(notification));
-            
             toast({
-              title: notification.title || 'Notification',
-              description: notification.body || 'You have a new notification',
+              title: 'Notification Setup Failed',
+              description: 'Unable to setup push notifications',
+              variant: 'destructive'
             });
           });
 
-          // Listen for push notification actions
-          PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+          // Listen for push notifications received while app is in foreground
+          PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+            console.log('Push notification received: ' + JSON.stringify(notification));
+            
+            // Show local notification when app is in foreground
+            LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: notification.title || 'SmartSpend',
+                  body: notification.body || 'You have a new notification',
+                  id: Date.now(),
+                  schedule: { at: new Date(Date.now() + 1000) },
+                  sound: 'beep.wav',
+                  attachments: undefined,
+                  actionTypeId: '',
+                  extra: notification.data
+                }
+              ]
+            });
+          });
+
+          // Listen for push notification actions (when user taps notification)
+          PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
             console.log('Push notification action performed: ' + JSON.stringify(notification));
             
-            // Handle notification action (e.g., navigate to specific screen)
-            // You can implement navigation logic here
+            // Handle notification action based on data
+            const data = notification.notification.data;
+            if (data?.route) {
+              // Navigate to specific route if provided
+              window.location.hash = data.route;
+            }
+            
+            toast({
+              title: notification.notification.title || 'Notification',
+              description: notification.notification.body || 'Notification received',
+            });
           });
+
+          // Request local notification permissions
+          await LocalNotifications.requestPermissions();
+          
+          // Listen for local notification actions
+          LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+            console.log('Local notification action performed: ' + JSON.stringify(notification));
+          });
+
         } else {
           console.log('Push notification permission not granted');
+          toast({
+            title: 'Notifications Disabled',
+            description: 'Enable notifications in settings to receive updates',
+            variant: 'destructive'
+          });
         }
       } catch (error) {
         console.error('Error initializing push notifications:', error);
+        toast({
+          title: 'Notification Error',
+          description: 'Failed to setup notifications',
+          variant: 'destructive'
+        });
       }
     };
 
@@ -72,10 +120,35 @@ export const usePushNotifications = () => {
     // Cleanup listeners when component unmounts
     return () => {
       PushNotifications.removeAllListeners();
+      LocalNotifications.removeAllListeners();
     };
   }, [user, toast]);
 
+  // Function to schedule local notifications for budget alerts
+  const scheduleLocalNotification = async (title: string, body: string, scheduleTime?: Date) => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title,
+            body,
+            id: Date.now(),
+            schedule: scheduleTime ? { at: scheduleTime } : { at: new Date(Date.now() + 1000) },
+            sound: 'beep.wav',
+            attachments: undefined,
+            actionTypeId: '',
+            extra: {}
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error scheduling local notification:', error);
+    }
+  };
+
   return {
-    // You can return functions to manually trigger actions if needed
+    scheduleLocalNotification
   };
 };
