@@ -95,7 +95,7 @@ export function QuickActions() {
       variant: "secondary" as const
     },
     {
-      icon: <Download className="h-5 w-5" />,
+      icon: <FileUp className="h-5 w-5" />,
       label: "Export Data",
       description: "Download your data",
       action: () => {
