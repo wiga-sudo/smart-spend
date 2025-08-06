@@ -58,57 +58,11 @@ interface FinancialState {
 export const useFinancialStore = create<FinancialState>()(
   persist(
     (set, get) => ({
-      transactions: [
-        {
-          id: '1',
-          description: 'Salary Deposit',
-          amount: 420000,
-          category: 'Income',
-          date: new Date(2024, 7, 1),
-          type: 'income'
-        },
-        {
-          id: '2',
-          description: 'Grocery Store',
-          amount: -8550,
-          category: 'Food',
-          date: new Date(2024, 7, 3),
-          type: 'expense'
-        },
-        {
-          id: '3',
-          description: 'Gas Station',
-          amount: -4520,
-          category: 'Transport',
-          date: new Date(2024, 7, 2),
-          type: 'expense'
-        }
-      ],
+      transactions: [],
       
-      budgets: [
-        { id: '1', category: 'Food', budgeted: 50000, spent: 24500, month: '2024-08' },
-        { id: '2', category: 'Transport', budgeted: 30000, spent: 12500, month: '2024-08' },
-        { id: '3', category: 'Entertainment', budgeted: 20000, spent: 8900, month: '2024-08' },
-      ],
+      budgets: [],
       
-      goals: [
-        {
-          id: '1',
-          name: 'Emergency Fund',
-          targetAmount: 1000000,
-          currentAmount: 650000,
-          deadline: new Date(2024, 11, 31),
-          description: 'Build 6 months of expenses'
-        },
-        {
-          id: '2',
-          name: 'Vacation',
-          targetAmount: 300000,
-          currentAmount: 120000,
-          deadline: new Date(2024, 10, 15),
-          description: 'Summer vacation to Europe'
-        }
-      ],
+      goals: [],
 
       // Transaction actions
       addTransaction: (transaction) => set((state) => ({
@@ -214,6 +168,32 @@ export const useFinancialStore = create<FinancialState>()(
     }),
     {
       name: 'smartspend-storage',
+      // Clear storage when user changes (sign out/sign in)
+      partialize: (state) => ({
+        transactions: state.transactions,
+        budgets: state.budgets,
+        goals: state.goals
+      })
     }
   )
 )
+
+// Helper function to clear all financial data (for new users or sign out)
+export const clearFinancialData = () => {
+  useFinancialStore.setState({
+    transactions: [],
+    budgets: [],
+    goals: []
+  })
+}
+
+// Helper function to import transactions from CSV
+export const importTransactionsFromCSV = (csvData: string) => {
+  // This will be implemented to parse CSV and add transactions
+  console.log('CSV import functionality to be implemented', csvData)
+}
+
+// Helper function to import budget from Excel/CSV
+export const importBudgetFromFile = (fileData: string) => {
+  // This will be implemented to parse Excel/CSV and add budget items
+  console.log('Budget import functionality to be implemented', fileData)

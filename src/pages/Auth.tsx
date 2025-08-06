@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { clearFinancialData } from '@/store/financial-store';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -54,6 +55,8 @@ export default function Auth() {
           title: "Account created!",
           description: "Please check your email to confirm your account.",
         });
+        // Clear any existing financial data for new user
+        clearFinancialData();
       }
     } catch (error) {
       toast({
