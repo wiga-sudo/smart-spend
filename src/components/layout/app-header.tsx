@@ -230,11 +230,6 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
             </div>
           </DialogContent>
         </Dialog>
-
-        <Button variant="ghost" size="icon" onClick={() => setShowSettings(true)}>
-          <Settings className="h-5 w-5" />
-        </Button>
-      </div>
     </div>
   )
 }
