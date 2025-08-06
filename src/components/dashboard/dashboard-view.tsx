@@ -8,7 +8,7 @@ import { FinancialTrends } from "./financial-trends"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus,FileDown, Target } from "lucide-react"
+import { Plus,FileUp,FileDown, Target } from "lucide-react"
 import { useFinancialStore } from "@/store/financial-store"
 
 export function DashboardView() {
