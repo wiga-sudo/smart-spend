@@ -1,10 +1,23 @@
 import { useEffect } from 'react';
-import { PushNotifications, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
-import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
 import { supabase } from '@/integrations/supabase/client';
+
+// Mock objects for web platform
+const mockPushNotifications = {
+  requestPermissions: () => Promise.resolve({ receive: 'denied' }),
+  register: () => Promise.resolve(),
+  addListener: () => ({ remove: () => {} }),
+  removeAllListeners: () => Promise.resolve()
+};
+
+const mockLocalNotifications = {
+  requestPermissions: () => Promise.resolve({ display: 'denied' }),
+  schedule: () => Promise.resolve(),
+  addListener: () => ({ remove: () => {} }),
+  removeAllListeners: () => Promise.resolve()
+};
 
 export const usePushNotifications = () => {
   const { toast } = useToast();
@@ -13,6 +26,18 @@ export const usePushNotifications = () => {
   useEffect(() => {
     const initializePushNotifications = async () => {
       if (!user || !Capacitor.isNativePlatform()) return;
+
+      // Dynamically import Capacitor plugins only on native platforms
+      let PushNotifications, LocalNotifications;
+      try {
+        const pushModule = await import('@capacitor/push-notifications');
+        const localModule = await import('@capacitor/local-notifications');
+        PushNotifications = pushModule.PushNotifications;
+        LocalNotifications = localModule.LocalNotifications;
+      } catch (error) {
+        console.log('Capacitor plugins not available, using mocks');
+        return;
+      }
 
       try {
         // Request permission for push notifications
@@ -52,7 +77,7 @@ export const usePushNotifications = () => {
           });
 
           // Listen for push notifications received while app is in foreground
-          PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+          PushNotifications.addListener('pushNotificationReceived', (notification: any) => {
             console.log('Push notification received: ' + JSON.stringify(notification));
             
             // Show local notification when app is in foreground
@@ -73,7 +98,7 @@ export const usePushNotifications = () => {
           });
 
           // Listen for push notification actions (when user taps notification)
-          PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
+          PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
             console.log('Push notification action performed: ' + JSON.stringify(notification));
             
             // Handle notification action based on data
@@ -119,14 +144,34 @@ export const usePushNotifications = () => {
 
     // Cleanup listeners when component unmounts
     return () => {
-      PushNotifications.removeAllListeners();
-      LocalNotifications.removeAllListeners();
+      if (Capacitor.isNativePlatform()) {
+        // Only cleanup if on native platform
+        import('@capacitor/push-notifications').then(({ PushNotifications }) => {
+          PushNotifications.removeAllListeners();
+        }).catch(() => {
+          console.log('Push notifications cleanup skipped');
+        });
+        import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+          LocalNotifications.removeAllListeners();
+        }).catch(() => {
+          console.log('Local notifications cleanup skipped');
+        });
+      }
     };
   }, [user, toast]);
 
   // Function to schedule local notifications for budget alerts
   const scheduleLocalNotification = async (title: string, body: string, scheduleTime?: Date) => {
     if (!Capacitor.isNativePlatform()) return;
+
+    let LocalNotifications;
+    try {
+      const localModule = await import('@capacitor/local-notifications');
+      LocalNotifications = localModule.LocalNotifications;
+    } catch (error) {
+      console.log('Local notifications not available');
+      return;
+    }
 
     try {
       await LocalNotifications.schedule({
