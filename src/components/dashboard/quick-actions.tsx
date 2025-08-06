@@ -95,7 +95,7 @@ export function QuickActions() {
       variant: "secondary" as const
     },
     {
-      icon: <Upload className="h-5 w-5" />,
+      icon: <Download className="h-5 w-5" />,
       label: "Export Data",
       description: "Download your data",
       action: () => {
@@ -107,7 +107,7 @@ export function QuickActions() {
       variant: "outline" as const
     },
     {
-      icon: <Download className="h-5 w-5" />,
+      icon: <Upload className="h-5 w-5" />,
       label: "Import Data",
       description: "Upload CSV file",
       action: () => {

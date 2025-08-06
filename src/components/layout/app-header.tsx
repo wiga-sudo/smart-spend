@@ -113,7 +113,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
         <Dialog open={showImport} onOpenChange={setShowImport}>
           <DialogTrigger asChild>
             <Button variant="ghost" size="icon" title="Import Data">
-              <Download className="h-5 w-5" />
+              <Upload className="h-5 w-5" />
             </Button>
           </DialogTrigger>
           <DialogContent>
