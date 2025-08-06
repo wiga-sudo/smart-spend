@@ -364,7 +364,7 @@ export function ProfileView() {
             {activeSection === "data" && (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Download className="h-5 w-5" />
+                  <Upload className="h-5 w-5" />
                   Data & Privacy
                 </h3>
                 <div className="space-y-4">
@@ -375,11 +375,11 @@ export function ProfileView() {
                     </p>
                     <div className="space-y-2">
                       <Button variant="outline" className="w-full">
-                        <Download className="mr-2 h-4 w-4" />
+                        <Upload className="mr-2 h-4 w-4" />
                         Export Data
                       </Button>
                       <Button variant="outline" className="w-full">
-                        <Upload className="mr-2 h-4 w-4" />
+                        <Download className="mr-2 h-4 w-4" />
                         Import Data
                       </Button>
                     </div>
