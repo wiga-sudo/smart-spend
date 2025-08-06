@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react"
 import { useFinancialStore } from "@/store/financial-store"
 import { useToast } from "@/hooks/use-toast"
+import { exportTransactionsToCSV, exportBudgetsToCSV, exportAllDataToJSON } from "@/store/financial-store"
 
 export function QuickActions() {
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false)
@@ -99,10 +100,29 @@ export function QuickActions() {
       label: "Export Data",
       description: "Download your data",
       action: () => {
-        toast({
-          title: "Export Started",
-          description: "Your data export is being prepared"
-        })
+        const result = exportAllDataToJSON();
+        if (result.success) {
+          const blob = new Blob([result.data], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = result.filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "Export successful",
+            description: `Downloaded ${result.filename}`
+          });
+        } else {
+          toast({
+            title: "Export failed",
+            description: result.error,
+            variant: "destructive"
+          });
+        }
       },
       variant: "outline" as const
     },

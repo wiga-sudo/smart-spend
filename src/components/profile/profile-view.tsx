@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { clearFinancialData } from "@/store/financial-store"
+import { exportAllDataToJSON, importTransactionsFromCSV } from "@/store/financial-store"
 
 interface UserProfile {
   display_name: string
@@ -375,10 +376,101 @@ export function ProfileView() {
                     </p>
                     <div className="space-y-2">
                       <Button variant="outline" className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          const result = exportAllDataToJSON();
+                          if (result.success) {
+                            const blob = new Blob([result.data], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = result.filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            
+                            toast({
+                              title: "Export successful",
+                              description: `Downloaded ${result.filename}`
+                            });
+                          }
+                        }}
+                      >
                         <FileUp className="mr-2 h-4 w-4" />
                         Export Data
                       </Button>
-                      <Button variant="outline" className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = '.json,.csv';
+                          input.onchange = (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (!file) return;
+                            
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              const content = event.target?.result as string;
+                              try {
+                                if (file.name.endsWith('.json')) {
+                                  const data = JSON.parse(content);
+                                  if (data.transactions) {
+                                    // Import JSON backup
+                                    clearFinancialData();
+                                    data.transactions.forEach((t: any) => {
+                                      useFinancialStore.getState().addTransaction({
+                                        ...t,
+                                        date: new Date(t.date)
+                                      });
+                                    });
+                                    data.budgets?.forEach((b: any) => {
+                                      useFinancialStore.getState().addBudget(b);
+                                    });
+                                    data.goals?.forEach((g: any) => {
+                                      useFinancialStore.getState().addGoal({
+                                        ...g,
+                                        deadline: new Date(g.deadline)
+                                      });
+                                    });
+                                    toast({
+                                      title: "Import successful",
+                                      description: "Your data has been restored."
+                                    });
+                                  }
+                                } else {
+                                  // Import CSV
+                                  const result = importTransactionsFromCSV(content);
+                                  if (result.success) {
+                                    toast({
+                                      title: "Import successful",
+                                      description: `Imported ${result.imported} transactions.`
+                                    });
+                                  } else {
+                                    toast({
+                                      title: "Import failed",
+                                      description: result.error,
+                                      variant: "destructive"
+                                    });
+                                  }
+                                }
+                              } catch (error) {
+                                toast({
+                                  title: "Import failed",
+                                  description: "Invalid file format.",
+                                  variant: "destructive"
+                                });
+                              }
+                            };
+                            reader.readAsText(file);
+                          };
+                          input.click();
+                        }}
+                      >
                         <FileUp className="mr-2 h-4 w-4" />
                         Import Data
                       </Button>

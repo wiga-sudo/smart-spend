@@ -189,12 +189,173 @@ export const clearFinancialData = () => {
 
 // Helper function to import transactions from CSV
 export const importTransactionsFromCSV = (csvData: string) => {
-  // This will be implemented to parse CSV and add transactions
-  console.log('CSV import functionality to be implemented', csvData)
+  try {
+    const lines = csvData.trim().split('\n');
+    if (lines.length < 2) {
+      throw new Error('CSV file must have at least a header row and one data row');
+    }
+
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const transactions: Omit<Transaction, 'id'>[] = [];
+
+    // Expected headers: description, amount, category, date, type
+    const requiredHeaders = ['description', 'amount', 'category', 'date', 'type'];
+    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+    
+    if (missingHeaders.length > 0) {
+      throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
+    }
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      if (values.length !== headers.length) continue;
+
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index];
+      });
+
+      // Parse and validate the transaction
+      const amount = parseFloat(row.amount);
+      const type = row.type.toLowerCase();
+      
+      if (isNaN(amount)) continue;
+      if (!['income', 'expense'].includes(type)) continue;
+
+      transactions.push({
+        description: row.description || 'Imported transaction',
+        amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
+        category: row.category || 'Other',
+        date: new Date(row.date) || new Date(),
+        type: type as 'income' | 'expense'
+      });
+    }
+
+    // Add transactions to store
+    const { addTransaction } = useFinancialStore.getState();
+    transactions.forEach(transaction => {
+      addTransaction(transaction);
+    });
+
+    return { success: true, imported: transactions.length };
+  } catch (error) {
+    console.error('CSV import error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
 }
 
 // Helper function to import budget from Excel/CSV
 export const importBudgetFromFile = (fileData: string) => {
-  // This will be implemented to parse Excel/CSV and add budget items
-  console.log('Budget import functionality to be implemented', fileData)
+  try {
+    const lines = fileData.trim().split('\n');
+    if (lines.length < 2) {
+      throw new Error('Budget file must have at least a header row and one data row');
+    }
+
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const budgets: Omit<BudgetItem, 'id'>[] = [];
+
+    // Expected headers: category, budgeted, month
+    const requiredHeaders = ['category', 'budgeted', 'month'];
+    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+    
+    if (missingHeaders.length > 0) {
+      throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
+    }
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      if (values.length !== headers.length) continue;
+
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index];
+      });
+
+      const budgeted = parseFloat(row.budgeted);
+      if (isNaN(budgeted)) continue;
+
+      budgets.push({
+        category: row.category || 'Other',
+        budgeted: budgeted,
+        spent: 0, // Will be calculated based on transactions
+        month: row.month || new Date().toISOString().slice(0, 7)
+      });
+    }
+
+    // Add budgets to store
+    const { addBudget } = useFinancialStore.getState();
+    budgets.forEach(budget => {
+      addBudget(budget);
+    });
+
+    return { success: true, imported: budgets.length };
+  } catch (error) {
+    console.error('Budget import error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+};
+
+// Helper function to export transactions to CSV
+export const exportTransactionsToCSV = () => {
+  const { transactions } = useFinancialStore.getState();
+  
+  if (transactions.length === 0) {
+    return { success: false, error: 'No transactions to export' };
+  }
+
+  const headers = ['description', 'amount', 'category', 'date', 'type'];
+  const csvContent = [
+    headers.join(','),
+    ...transactions.map(t => [
+      `"${t.description}"`,
+      Math.abs(t.amount).toString(),
+      `"${t.category}"`,
+      t.date.toISOString().split('T')[0],
+      t.type
+    ].join(','))
+  ].join('\n');
+
+  return { success: true, data: csvContent, filename: `transactions_${new Date().toISOString().split('T')[0]}.csv` };
+};
+
+// Helper function to export budgets to CSV
+export const exportBudgetsToCSV = () => {
+  const { budgets } = useFinancialStore.getState();
+  
+  if (budgets.length === 0) {
+    return { success: false, error: 'No budgets to export' };
+  }
+
+  const headers = ['category', 'budgeted', 'spent', 'month'];
+  const csvContent = [
+    headers.join(','),
+    ...budgets.map(b => [
+      `"${b.category}"`,
+      b.budgeted.toString(),
+      b.spent.toString(),
+      b.month
+    ].join(','))
+  ].join('\n');
+
+  return { success: true, data: csvContent, filename: `budgets_${new Date().toISOString().split('T')[0]}.csv` };
+};
+
+// Helper function to export all financial data as JSON
+export const exportAllDataToJSON = () => {
+  const { transactions, budgets, goals } = useFinancialStore.getState();
+  
+  const data = {
+    transactions,
+    budgets,
+    goals,
+    exportDate: new Date().toISOString(),
+    version: '1.0'
+  };
+
+  return { 
+    success: true, 
+    data: JSON.stringify(data, null, 2), 
+    filename: `smartspend_backup_${new Date().toISOString().split('T')[0]}.json` 
+  };
 }; 

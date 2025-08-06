@@ -8,7 +8,13 @@ import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/hooks/use-auth"
-import { importTransactionsFromCSV, importBudgetFromFile } from "@/store/financial-store"
+import { 
+  importTransactionsFromCSV, 
+  importBudgetFromFile,
+  exportTransactionsToCSV,
+  exportBudgetsToCSV,
+  exportAllDataToJSON
+} from "@/store/financial-store"
 
 interface AppHeaderProps {
   title: string
@@ -79,26 +85,120 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
     const file = event.target.files?.[0]
     if (!file) return
 
+    // Validate file type
+    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a CSV file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 5MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const reader = new FileReader()
     reader.onload = (e) => {
       const content = e.target?.result as string
       
       if (type === 'transactions') {
-        importTransactionsFromCSV(content)
-        toast({
-          title: "Import Started",
-          description: "Transactions import functionality will be implemented soon."
-        })
+        const result = importTransactionsFromCSV(content);
+        if (result.success) {
+          toast({
+            title: "Import successful",
+            description: `Imported ${result.imported} transactions.`
+          });
+        } else {
+          toast({
+            title: "Import failed",
+            description: result.error,
+            variant: "destructive"
+          });
+        }
       } else {
-        importBudgetFromFile(content)
-        toast({
-          title: "Import Started", 
-          description: "Budget import functionality will be implemented soon."
-        })
+        const result = importBudgetFromFile(content);
+        if (result.success) {
+          toast({
+            title: "Import successful",
+            description: `Imported ${result.imported} budget items.`
+          });
+        } else {
+          toast({
+            title: "Import failed",
+            description: result.error,
+            variant: "destructive"
+          });
+        }
       }
     }
+    
+    reader.onerror = () => {
+      toast({
+        title: "File read error",
+        description: "Failed to read the selected file.",
+        variant: "destructive"
+      });
+    }
+    
     reader.readAsText(file)
+    
+    // Clear the input so the same file can be selected again
+    event.target.value = ''
     setShowImport(false)
+  }
+
+  const handleExport = (type: 'transactions' | 'budgets' | 'all') => {
+    let result;
+    
+    switch (type) {
+      case 'transactions':
+        result = exportTransactionsToCSV();
+        break;
+      case 'budgets':
+        result = exportBudgetsToCSV();
+        break;
+      case 'all':
+        result = exportAllDataToJSON();
+        break;
+      default:
+        return;
+    }
+
+    if (result.success) {
+      // Create and download the file
+      const blob = new Blob([result.data], { 
+        type: type === 'all' ? 'application/json' : 'text/csv' 
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export successful",
+        description: `Downloaded ${result.filename}`
+      });
+    } else {
+      toast({
+        toast({
+          title: "Import Started",
+        description: result.error,
+        variant: "destructive"
+      });
+    }
   }
 
   return (
@@ -126,6 +226,9 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="transactions-file">Import Transactions (CSV)</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  CSV format: description, amount, category, date, type
+                </p>
                 <Input
                   id="transactions-file"
                   type="file"
@@ -135,12 +238,47 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="budget-file">Import Budget (CSV/Excel)</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  CSV format: category, budgeted, month
+                </p>
                 <Input
                   id="budget-file"
                   type="file"
                   accept=".csv,.xlsx,.xls"
                   onChange={(e) => handleFileImport(e, 'budget')}
                 />
+              </div>
+              <div className="mt-4 p-3 bg-muted rounded-lg">
+                <h4 className="font-medium text-sm mb-2">Export Options</h4>
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => handleExport('transactions')}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export Transactions (CSV)
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => handleExport('budgets')}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export Budgets (CSV)
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => handleExport('all')}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export All Data (JSON)
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
