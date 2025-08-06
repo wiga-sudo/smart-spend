@@ -379,7 +379,7 @@ export function ProfileView() {
                         Export Data
                       </Button>
                       <Button variant="outline" className="w-full">
-                        <Upload className="mr-2 h-4 w-4" />
+                        <FileUp className="mr-2 h-4 w-4" />
                         Import Data
                       </Button>
                     </div>

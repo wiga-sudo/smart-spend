@@ -40,7 +40,7 @@ export function DashboardView() {
                 </Card>
                 
                 <Card className="p-6">
-                  <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <FileUp className="h-12 w-12 mx-auto mb-4 text-primary" />
                   <h3 className="font-semibold mb-2">Import Data</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Upload your CSV or Excel files to import existing data

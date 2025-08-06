@@ -107,7 +107,7 @@ export function QuickActions() {
       variant: "outline" as const
     },
     {
-      icon: <Upload className="h-5 w-5" />,
+      icon: <FileUp className="h-5 w-5" />,
       label: "Import Data",
       description: "Upload CSV file",
       action: () => {
