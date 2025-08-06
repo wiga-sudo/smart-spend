@@ -197,3 +197,4 @@ export const importTransactionsFromCSV = (csvData: string) => {
 export const importBudgetFromFile = (fileData: string) => {
   // This will be implemented to parse Excel/CSV and add budget items
   console.log('Budget import functionality to be implemented', fileData)
+}; 
