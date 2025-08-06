@@ -12,8 +12,8 @@ import {
   Settings, 
   Bell, 
   Shield, 
-  Download,
-  Upload,
+ FileUp,
+ FileDown,
   Trash2,
   Save,
   Loader2,
@@ -178,7 +178,7 @@ export function ProfileView() {
     { id: "profile", label: "Profile Info", icon: User },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "security", label: "Security", icon: Shield },
-    { id: "data", label: "Data & Privacy", icon: Download },
+    { id: "data", label: "Data & Privacy", icon:FileUp },
   ]
 
   return (
