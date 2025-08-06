@@ -1,10 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
@@ -13,145 +12,171 @@ import {
   Settings, 
   Bell, 
   Shield, 
-  Palette, 
-  Globe, 
-  CreditCard, 
   Download,
   Upload,
   Trash2,
-  Eye,
-  EyeOff
+  Save,
+  Loader2,
+  LogOut
 } from "lucide-react"
-import { useFinancialStore } from "@/store/financial-store"
+import { useAuth } from "@/hooks/use-auth"
+import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
 interface UserProfile {
-  firstName: string
-  lastName: string
+  display_name: string
   email: string
-  phoneNumber: string
-  currency: string
-  language: string
-  timezone: string
-}
-
-interface NotificationSettings {
-  budgetAlerts: boolean
-  goalReminders: boolean
-  transactionNotifications: boolean
-  weeklyReports: boolean
-  monthlyReports: boolean
-  marketingEmails: boolean
-}
-
-interface SecuritySettings {
-  twoFactorEnabled: boolean
-  biometricLogin: boolean
-  sessionTimeout: string
+  phone: string
+  notifications_enabled: boolean
+  push_notifications_enabled: boolean
 }
 
 export function ProfileView() {
-  const { transactions, budgets, goals } = useFinancialStore()
+  const { user, signOut } = useAuth()
   const { toast } = useToast()
   
   const [profile, setProfile] = useState<UserProfile>({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phoneNumber: "+1 (555) 123-4567",
-    currency: "KES",
-    language: "en",
-    timezone: "America/New_York"
+    display_name: "",
+    email: "",
+    phone: "",
+    notifications_enabled: true,
+    push_notifications_enabled: true
   })
 
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    budgetAlerts: true,
-    goalReminders: true,
-    transactionNotifications: false,
-    weeklyReports: true,
-    monthlyReports: true,
-    marketingEmails: false
-  })
-
-  const [security, setSecurity] = useState<SecuritySettings>({
-    twoFactorEnabled: false,
-    biometricLogin: true,
-    sessionTimeout: "30"
-  })
-
+  const [notifications, setNotifications] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
   const [activeSection, setActiveSection] = useState<string>("profile")
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  const handleProfileUpdate = () => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully."
-    })
-  }
-
-  const handleNotificationUpdate = (key: keyof NotificationSettings, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [key]: value }))
-    toast({
-      title: "Notification settings updated",
-      description: `${key} has been ${value ? 'enabled' : 'disabled'}.`
-    })
-  }
-
-  const handleSecurityUpdate = (key: keyof SecuritySettings, value: boolean | string) => {
-    setSecurity(prev => ({ ...prev, [key]: value }))
-    toast({
-      title: "Security settings updated",
-      description: "Your security preferences have been saved."
-    })
-  }
-
-  const handleExportData = () => {
-    const data = {
-      profile,
-      transactions,
-      budgets,
-      goals,
-      exportDate: new Date().toISOString()
+  useEffect(() => {
+    if (user) {
+      fetchProfile()
+      fetchNotifications()
     }
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `smartspend-data-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+  }, [user])
 
-    toast({
-      title: "Data exported",
-      description: "Your financial data has been downloaded successfully."
-    })
+  const fetchProfile = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return
+      }
+
+      if (data) {
+        setProfile({
+          display_name: data.display_name || "",
+          email: data.email || user.email || "",
+          phone: data.phone || "",
+          notifications_enabled: data.notifications_enabled ?? true,
+          push_notifications_enabled: data.push_notifications_enabled ?? true
+        })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
-  const handleDeleteAccount = () => {
-    toast({
-      title: "Account deletion requested",
-      description: "This feature would normally contact support for account deletion.",
-      variant: "destructive"
-    })
-    setShowDeleteConfirm(false)
+  const fetchNotifications = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      if (error) {
+        console.error('Error fetching notifications:', error)
+        return
+      }
+
+      setNotifications(data || [])
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
-  const accountStats = {
-    totalTransactions: transactions.length,
-    totalBudgets: budgets.length,
-    totalGoals: goals.length,
-    accountAge: "3 months",
-    lastLogin: "Today"
+  const handleProfileUpdate = async () => {
+    if (!user) return
+
+    setLoading(true)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          display_name: profile.display_name,
+          phone: profile.phone,
+          notifications_enabled: profile.notifications_enabled,
+          push_notifications_enabled: profile.push_notifications_enabled
+        })
+        .eq('user_id', user.id)
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update profile. Please try again.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been saved successfully."
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const markNotificationAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId)
+
+      if (!error) {
+        setNotifications(prev => 
+          prev.map(notif => 
+            notif.id === notificationId 
+              ? { ...notif, read: true }
+              : notif
+          )
+        )
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out."
+    })
   }
 
   const menuItems = [
     { id: "profile", label: "Profile Info", icon: User },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "security", label: "Security", icon: Shield },
-    { id: "preferences", label: "Preferences", icon: Settings },
     { id: "data", label: "Data & Privacy", icon: Download },
   ]
 
@@ -161,45 +186,23 @@ export function ProfileView() {
         {/* Profile Header */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xl font-bold">
-                {profile.firstName[0]}{profile.lastName[0]}
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold">{profile.firstName} {profile.lastName}</h2>
-                <p className="text-muted-foreground">{profile.email}</p>
-                <div className="flex gap-2 mt-2">
-                  <Badge variant="secondary">Premium User</Badge>
-                  <Badge variant="outline">Verified</Badge>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xl font-bold">
+                  {profile.display_name ? profile.display_name[0]?.toUpperCase() : user?.email?.[0]?.toUpperCase() || 'U'}
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold">{profile.display_name || 'User'}</h2>
+                  <p className="text-muted-foreground">{profile.email}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="secondary">Verified</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Account Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-primary">{accountStats.totalTransactions}</div>
-                <p className="text-xs text-muted-foreground">Transactions</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-accent">{accountStats.totalBudgets}</div>
-                <p className="text-xs text-muted-foreground">Active Budgets</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-success">{accountStats.totalGoals}</div>
-                <p className="text-xs text-muted-foreground">Savings Goals</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-warning">{accountStats.accountAge}</div>
-                <p className="text-xs text-muted-foreground">Member Since</p>
-              </div>
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -239,44 +242,64 @@ export function ProfileView() {
                   <User className="h-5 w-5" />
                   Personal Information
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="displayName">Display Name</Label>
                     <Input
-                      id="firstName"
-                      value={profile.firstName}
-                      onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
+                      id="displayName"
+                      value={profile.display_name}
+                      onChange={(e) => setProfile(prev => ({ ...prev, display_name: e.target.value }))}
+                      placeholder="Enter your display name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="email">Email Address</Label>
                     <Input
-                      id="lastName"
-                      value={profile.lastName}
-                      onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
+                      id="email"
+                      type="email"
+                      value={profile.email}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-xs text-muted-foreground">Email cannot be changed here</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      value={profile.phone}
+                      onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="Enter your phone number"
                     />
                   </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Email Notifications</p>
+                        <p className="text-sm text-muted-foreground">Receive notifications via email</p>
+                      </div>
+                      <Switch
+                        checked={profile.notifications_enabled}
+                        onCheckedChange={(checked) => setProfile(prev => ({ ...prev, notifications_enabled: checked }))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Push Notifications</p>
+                        <p className="text-sm text-muted-foreground">Receive push notifications on mobile</p>
+                      </div>
+                      <Switch
+                        checked={profile.push_notifications_enabled}
+                        onCheckedChange={(checked) => setProfile(prev => ({ ...prev, push_notifications_enabled: checked }))}
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleProfileUpdate} className="w-full" disabled={loading}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Changes
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profile.email}
-                    onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    value={profile.phoneNumber}
-                    onChange={(e) => setProfile(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                  />
-                </div>
-                <Button onClick={handleProfileUpdate} className="w-full">
-                  Save Changes
-                </Button>
               </div>
             )}
 
@@ -284,29 +307,37 @@ export function ProfileView() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Bell className="h-5 w-5" />
-                  Notification Preferences
+                  Notifications
                 </h3>
-                {Object.entries(notifications).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">
-                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {key === 'budgetAlerts' && 'Get notified when you exceed budget limits'}
-                        {key === 'goalReminders' && 'Reminders about your savings goals progress'}
-                        {key === 'transactionNotifications' && 'Alerts for every transaction'}
-                        {key === 'weeklyReports' && 'Weekly summary of your finances'}
-                        {key === 'monthlyReports' && 'Monthly financial reports'}
-                        {key === 'marketingEmails' && 'Product updates and tips'}
-                      </p>
-                    </div>
-                    <Switch
-                      checked={value}
-                      onCheckedChange={(checked) => handleNotificationUpdate(key as keyof NotificationSettings, checked)}
-                    />
+                {notifications.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">No notifications yet</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-3">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={`p-3 border rounded-lg ${notification.read ? 'bg-muted/50' : 'bg-background'}`}
+                        onClick={() => !notification.read && markNotificationAsRead(notification.id)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium">{notification.title}</h4>
+                            <p className="text-sm text-muted-foreground">{notification.message}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(notification.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -316,98 +347,15 @@ export function ProfileView() {
                   <Shield className="h-5 w-5" />
                   Security Settings
                 </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Two-Factor Authentication</p>
-                      <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
-                    </div>
-                    <Switch
-                      checked={security.twoFactorEnabled}
-                      onCheckedChange={(checked) => handleSecurityUpdate('twoFactorEnabled', checked)}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Biometric Login</p>
-                      <p className="text-sm text-muted-foreground">Use fingerprint or face ID</p>
-                    </div>
-                    <Switch
-                      checked={security.biometricLogin}
-                      onCheckedChange={(checked) => handleSecurityUpdate('biometricLogin', checked)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
-                    <Select 
-                      value={security.sessionTimeout} 
-                      onValueChange={(value) => handleSecurityUpdate('sessionTimeout', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="15">15 minutes</SelectItem>
-                        <SelectItem value="30">30 minutes</SelectItem>
-                        <SelectItem value="60">1 hour</SelectItem>
-                        <SelectItem value="120">2 hours</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeSection === "preferences" && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  App Preferences
-                </h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currency">Currency</Label>
-                    <div className="p-2 border rounded-md bg-muted/50">
-                      <span className="text-sm">KES (Ksh.)</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="language">Language</Label>
-                    <Select 
-                      value={profile.language} 
-                      onValueChange={(value) => setProfile(prev => ({ ...prev, language: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Spanish</SelectItem>
-                        <SelectItem value="fr">French</SelectItem>
-                        <SelectItem value="de">German</SelectItem>
-                        <SelectItem value="it">Italian</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone">Timezone</Label>
-                    <Select 
-                      value={profile.timezone} 
-                      onValueChange={(value) => setProfile(prev => ({ ...prev, timezone: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                        <SelectItem value="America/Chicago">Central Time</SelectItem>
-                        <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                        <SelectItem value="Europe/London">GMT</SelectItem>
-                        <SelectItem value="Europe/Paris">CET</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-medium mb-2">Account Security</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Your account is secured with Supabase authentication.
+                  </p>
+                  <Button variant="outline" onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </Button>
                 </div>
               </div>
             )}
@@ -420,68 +368,33 @@ export function ProfileView() {
                 </h3>
                 <div className="space-y-4">
                   <div className="p-4 border rounded-lg">
-                    <h4 className="font-medium mb-2">Export Your Data</h4>
+                    <h4 className="font-medium mb-2">Data Management</h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Download a copy of all your financial data including transactions, budgets, and goals.
+                      Manage your financial data and privacy settings.
                     </p>
-                    <Button onClick={handleExportData} variant="outline" className="w-full">
-                      <Download className="mr-2 h-4 w-4" />
-                      Export Data
-                    </Button>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full">
+                        <Download className="mr-2 h-4 w-4" />
+                        Export Data
+                      </Button>
+                      <Button variant="outline" className="w-full">
+                        <Upload className="mr-2 h-4 w-4" />
+                        Import Data
+                      </Button>
+                    </div>
                   </div>
                   
-                  <div className="p-4 border rounded-lg">
-                    <h4 className="font-medium mb-2">Import Data</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Import financial data from other apps or previous exports.
-                    </p>
-                    <Button variant="outline" className="w-full">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Import Data
-                    </Button>
-                  </div>
-
                   <Separator />
 
                   <div className="p-4 border border-destructive rounded-lg">
                     <h4 className="font-medium mb-2 text-destructive">Danger Zone</h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Permanently delete your account and all associated data.
+                      Once you delete your account, there is no going back. Please be certain.
                     </p>
-                    {!showDeleteConfirm ? (
-                      <Button 
-                        variant="destructive" 
-                        className="w-full"
-                        onClick={() => setShowDeleteConfirm(true)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Account
-                      </Button>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-destructive">
-                          Are you sure? This action cannot be undone.
-                        </p>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            className="flex-1"
-                            onClick={handleDeleteAccount}
-                          >
-                            Yes, Delete
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex-1"
-                            onClick={() => setShowDeleteConfirm(false)}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                    <Button variant="destructive" className="w-full">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Account
+                    </Button>
                   </div>
                 </div>
               </div>
