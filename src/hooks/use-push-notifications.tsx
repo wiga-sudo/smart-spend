@@ -24,13 +24,14 @@ export const usePushNotifications = () => {
           PushNotifications.addListener('registration', async (token) => {
             console.log('Push registration success, token: ' + token.value);
             
-            // Save the token to user's profile or a separate tokens table
-            // You might want to create a push_tokens table to store these
+            // Save the token to user's profile
+            // TODO: Uncomment once push_token column is available in types
             try {
-              await supabase
-                .from('profiles')
-                .update({ push_token: token.value })
-                .eq('user_id', user.id);
+              // await supabase
+              //   .from('profiles')
+              //   .update({ push_token: token.value })
+              //   .eq('user_id', user.id);
+              console.log('Push token received:', token.value);
             } catch (error) {
               console.error('Error saving push token:', error);
             }
