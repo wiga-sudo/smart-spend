@@ -5,7 +5,7 @@ import { DashboardView } from "@/components/dashboard/dashboard-view"
 import { ExpensesView } from "@/components/expenses/expenses-view"
 import { GoalsView } from "@/components/goals/goals-view"
 import { BudgetView } from "@/components/budget/budget-view"
-import { ProfileView } from "@/components/profile/profile-view"
+import ProfileView from "@/components/profile/profile-view"
 import { usePushNotifications } from "@/hooks/use-push-notifications"
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { SplashScreen } from '@capacitor/splash-screen'
