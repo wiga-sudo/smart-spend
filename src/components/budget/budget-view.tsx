@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus, CreditCard, Trash2, AlertTriangle } from "lucide-react"
 import { useFinancialStore } from "@/store/financial-store"
 import { useToast } from "@/hooks/use-toast"
-import { usePushNotifications } from "@/hooks/use-push-notifications"
+import { useLocalNotifications } from "@/hooks/use-push-notifications"
 
 const budgetCategories = [
   "Food", "Transport", "Entertainment", "Shopping", "Bills", 
@@ -18,7 +18,7 @@ const budgetCategories = [
 export function BudgetView() {
   const { budgets, addBudget, updateBudget, deleteBudget, getBudgetStatus, getSpendingByCategory } = useFinancialStore()
   const { toast } = useToast()
-  const { scheduleLocalNotification } = usePushNotifications()
+  const { scheduleLocalNotification } = useLocalNotifications()
   const [isAdding, setIsAdding] = useState(false)
   const [formData, setFormData] = useState({
     category: "",

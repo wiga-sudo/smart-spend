@@ -5,8 +5,6 @@ import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 import java.util.ArrayList;
 
-// Push Notifications
-import com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin;
 // Local Notifications
 import com.capacitorjs.plugins.localnotifications.LocalNotificationsPlugin;
 // Status Bar
@@ -24,7 +22,6 @@ public class MainActivity extends BridgeActivity {
         // Initializes the Bridge
         this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
             // Additional plugins you've installed go here
-            add(PushNotificationsPlugin.class);
             add(LocalNotificationsPlugin.class);
             add(StatusBarPlugin.class);
             add(SplashScreenPlugin.class);
