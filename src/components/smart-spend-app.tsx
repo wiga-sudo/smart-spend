@@ -6,9 +6,15 @@ import { ExpensesView } from "@/components/expenses/expenses-view"
 import { GoalsView } from "@/components/goals/goals-view"
 import { BudgetView } from "@/components/budget/budget-view"
 import { ProfileView } from "@/components/profile/profile-view"
+import { useSupabaseSync } from "@/hooks/use-supabase-sync"
+import { usePushNotifications } from "@/hooks/use-push-notifications"
 
 export function SmartSpendApp() {
   const [activeTab, setActiveTab] = useState("dashboard")
+  
+  // Initialize Supabase sync and push notifications
+  useSupabaseSync()
+  usePushNotifications()
 
   const getHeaderTitle = () => {
     switch (activeTab) {

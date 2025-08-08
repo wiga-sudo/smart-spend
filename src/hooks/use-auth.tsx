@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { clearFinancialData } from '@/store/financial-store';
+import { useSupabaseSync } from './use-supabase-sync';
 
 interface AuthContextType {
   user: User | null;
@@ -37,6 +38,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Clear local data when user signs out
+        if (event === 'SIGNED_OUT') {
+          clearFinancialData();
+        }
       }
     );
 

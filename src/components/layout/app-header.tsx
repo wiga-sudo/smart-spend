@@ -9,6 +9,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/hooks/use-auth"
 import { importTransactionsFromCSV, importBudgetFromFile, useFinancialStore } from "@/store/financial-store"
+import { useSupabaseSync } from "@/hooks/use-supabase-sync"
 
 interface AppHeaderProps {
   title: string
@@ -25,6 +26,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
   const [showSettings, setShowSettings] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const { transactions, budgets, goals } = useFinancialStore()
+  const { syncAllData } = useSupabaseSync()
 
   useEffect(() => {
     if (user) {
@@ -205,6 +207,20 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  syncAllData()
+                  toast({
+                    title: "Sync Started",
+                    description: "Syncing your data across devices..."
+                  })
+                }}
+              >
+                <FileUp className="h-4 w-4 mr-2" />
+                Sync Data Across Devices
+              </Button>
               <Button 
                 variant="outline" 
                 className="w-full"

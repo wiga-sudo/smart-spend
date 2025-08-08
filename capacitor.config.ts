@@ -4,10 +4,18 @@ const config: CapacitorConfig = {
   appId: 'com.smartspend.app',
   appName: 'SmartSpend',
   webDir: 'dist',
+  bundledWebRuntime: false,
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    allowNavigation: [
+      'https://avjdagipcmkvplwlonwo.supabase.co',
+      'https://smartspend.app'
+    ]
   },
   plugins: {
+    App: {
+      launchUrl: 'com.smartspend.app'
+    },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"]
     },
@@ -29,7 +37,13 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: "LIGHT_CONTENT",
-      backgroundColor: "#3B82F6"
+      backgroundColor: "#3B82F6",
+      overlaysWebView: false
+    },
+    Keyboard: {
+      resize: "body",
+      style: "dark",
+      resizeOnFullScreen: true
     }
   }
 };

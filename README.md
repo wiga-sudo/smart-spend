@@ -59,10 +59,34 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Database & Authentication)
+- Capacitor (Mobile App Framework)
 
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/e5458f28-a63f-4085-9b73-487964bf1e9e) and click on Share -> Publish.
+
+## Mobile App Development
+
+This project includes Android app support using Capacitor:
+
+### Android Setup
+1. Install Android Studio
+2. Set up Android SDK
+3. Run `npx cap sync android` to sync web assets
+4. Run `npx cap run android` to build and run on device/emulator
+
+### Features
+- Cross-device data synchronization via Supabase
+- Push notifications for budget alerts and goal progress
+- Offline support with local storage
+- Native Android UI integration
+
+### Supabase Integration
+- Real-time data sync across devices
+- User authentication and profiles
+- Automatic backup of financial data
+- Push notifications for important events
 
 ## Can I connect a custom domain to my Lovable project?
 

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { supabase } from '@/integrations/supabase/client'
 
 export interface Transaction {
   id: string
@@ -36,17 +37,20 @@ interface FinancialState {
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void
   deleteTransaction: (id: string) => void
   updateTransaction: (id: string, transaction: Partial<Transaction>) => void
+  syncTransactionToSupabase: (transaction: Transaction) => Promise<void>
   
   // Budget actions
   addBudget: (budget: Omit<BudgetItem, 'id'>) => void
   updateBudget: (id: string, budget: Partial<BudgetItem>) => void
   deleteBudget: (id: string) => void
   setMonthlyBudget: (amount: number) => void
+  syncBudgetToSupabase: (budget: BudgetItem) => Promise<void>
   
   // Goal actions
   addGoal: (goal: Omit<SavingsGoal, 'id'>) => void
   updateGoal: (id: string, goal: Partial<SavingsGoal>) => void
   deleteGoal: (id: string) => void
+  syncGoalToSupabase: (goal: SavingsGoal) => Promise<void>
   
   // Computed values
   getTotalIncome: () => number
@@ -69,7 +73,7 @@ export const useFinancialStore = create<FinancialState>()(
       addTransaction: (transaction) => set((state) => ({
         transactions: [
           ...state.transactions,
-          { ...transaction, id: Date.now().toString() }
+          { ...transaction, id: crypto.randomUUID() }
         ]
       })),
 
@@ -83,11 +87,36 @@ export const useFinancialStore = create<FinancialState>()(
         )
       })),
 
+      syncTransactionToSupabase: async (transaction) => {
+        try {
+          const user = supabase.auth.getUser();
+          if (!user) return;
+
+          const { error } = await supabase
+            .from('transactions')
+            .upsert({
+              id: transaction.id,
+              user_id: (await user).data.user?.id,
+              description: transaction.description,
+              amount: transaction.amount,
+              category: transaction.category,
+              date: transaction.date.toISOString(),
+              type: transaction.type
+            });
+
+          if (error) {
+            console.error('Error syncing transaction:', error);
+          }
+        } catch (error) {
+          console.error('Error syncing transaction:', error);
+        }
+      },
+
       // Budget actions
       addBudget: (budget) => set((state) => ({
         budgets: [
           ...state.budgets,
-          { ...budget, id: Date.now().toString() }
+          { ...budget, id: crypto.randomUUID() }
         ]
       })),
 
@@ -101,11 +130,35 @@ export const useFinancialStore = create<FinancialState>()(
         budgets: state.budgets.filter(b => b.id !== id)
       })),
 
+      syncBudgetToSupabase: async (budget) => {
+        try {
+          const user = supabase.auth.getUser();
+          if (!user) return;
+
+          const { error } = await supabase
+            .from('budget_items')
+            .upsert({
+              id: budget.id,
+              user_id: (await user).data.user?.id,
+              category: budget.category,
+              budgeted_amount: budget.budgeted,
+              spent_amount: budget.spent,
+              month: budget.month
+            });
+
+          if (error) {
+            console.error('Error syncing budget:', error);
+          }
+        } catch (error) {
+          console.error('Error syncing budget:', error);
+        }
+      },
+
       // Goal actions
       addGoal: (goal) => set((state) => ({
         goals: [
           ...state.goals,
-          { ...goal, id: Date.now().toString() }
+          { ...goal, id: crypto.randomUUID() }
         ]
       })),
 
@@ -118,6 +171,32 @@ export const useFinancialStore = create<FinancialState>()(
       deleteGoal: (id) => set((state) => ({
         goals: state.goals.filter(g => g.id !== id)
       })),
+
+      syncGoalToSupabase: async (goal) => {
+        try {
+          const user = supabase.auth.getUser();
+          if (!user) return;
+
+          const { error } = await supabase
+            .from('savings_goals')
+            .upsert({
+              id: goal.id,
+              user_id: (await user).data.user?.id,
+              name: goal.name,
+              target_amount: goal.targetAmount,
+              current_amount: goal.currentAmount,
+              deadline: goal.deadline.toISOString(),
+              description: goal.description
+            });
+
+          if (error) {
+            console.error('Error syncing goal:', error);
+          }
+        } catch (error) {
+          console.error('Error syncing goal:', error);
+        }
+      },
+
       setMonthlyBudget: (amount) => set({ monthlyBudget: amount }),
 
       getBudgetedExpenses: () => {
@@ -183,11 +262,17 @@ export const useFinancialStore = create<FinancialState>()(
     {
       name: 'smartspend-storage',
       // Clear storage when user changes (sign out/sign in)
+      version: 1,
       partialize: (state) => ({
         transactions: state.transactions,
         budgets: state.budgets,
         goals: state.goals,
         monthlyBudget: state.monthlyBudget
+      }),
+      // Merge function to handle data migration
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...persistedState,
       })
     }
   )
@@ -212,4 +297,4 @@ export const importTransactionsFromCSV = (csvData: string) => {
 export const importBudgetFromFile = (fileData: string) => {
   // This will be implemented to parse Excel/CSV and add budget items
   console.log('Budget import functionality to be implemented', fileData)
-}; 
+};
