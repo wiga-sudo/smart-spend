@@ -12,7 +12,7 @@ import { usePushNotifications } from "@/hooks/use-push-notifications"
 export function SmartSpendApp() {
   const [activeTab, setActiveTab] = useState("dashboard")
   
-  // Initialize Supabase sync and push notifications
+  // Initialize Supabase sync and local notifications
   useSupabaseSync()
   usePushNotifications()
 
